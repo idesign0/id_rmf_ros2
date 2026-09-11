@@ -346,9 +346,9 @@ nlohmann::json& copy_phase_data(
   phase_state["category"] = header.category();
   phase_state["detail"] = header.detail();
   phase_state["original_estimate_millis"] =
-    std::max(0l, to_millis(header.original_duration_estimate()).count());
+    std::max<std::int64_t>(0, to_millis(header.original_duration_estimate()).count());
   phase_state["estimate_millis"] =
-    std::max(0l, to_millis(snapshot.estimate_remaining_time()).count());
+    std::max<std::int64_t>(0, to_millis(snapshot.estimate_remaining_time()).count());
   phase_state["final_event_id"] = snapshot.final_event()->id();
   auto& event_states = phase_state["events"];
 
@@ -412,7 +412,7 @@ void copy_phase_data(
   phase["category"] = header.category();
   phase["detail"] = header.detail();
   phase["estimate_millis"] =
-    std::max(0l, to_millis(header.original_duration_estimate()).count());
+    std::max<std::int64_t>(0, to_millis(header.original_duration_estimate()).count());
 }
 
 //==============================================================================
@@ -486,9 +486,9 @@ void TaskManager::ActiveTask::publish_task_state(TaskManager& mgr)
   _state_msg["unix_millis_finish_time"] =
     to_millis(finish_estimate.time_since_epoch()).count();
   _state_msg["original_estimate_millis"] =
-    std::max(0l, to_millis(header.original_duration_estimate()).count());
+    std::max<std::int64_t>(0, to_millis(header.original_duration_estimate()).count());
   _state_msg["estimate_millis"] =
-    std::max(0l, to_millis(remaining_time_estimate).count());
+    std::max<std::int64_t>(0, to_millis(remaining_time_estimate).count());
   copy_assignment(_state_msg["assigned_to"], *mgr._context);
   _state_msg["status"] =
     status_to_string(_task->status_overview());
@@ -1840,7 +1840,7 @@ rmf_task::State TaskManager::_publish_pending_task(
     const auto estimate =
       pending.finish_state().time().value() - pending.deployment_time();
     pending_json["original_estimate_millis"] =
-      std::max(0l, to_millis(estimate).count());
+      std::max<std::int64_t>(0, to_millis(estimate).count());
   }
   copy_assignment(pending_json["assigned_to"], *_context);
   pending_json["status"] = "queued";
