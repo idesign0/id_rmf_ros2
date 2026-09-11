@@ -22,7 +22,11 @@
 
 #include <rxcpp/rx-observable.hpp>
 
+#if defined(__linux__)
 #include <malloc.h>
+#else
+#define malloc_trim(x) 0  /* glibc-only, no-op on macOS */
+#endif
 
 namespace rmf_fleet_adapter {
 

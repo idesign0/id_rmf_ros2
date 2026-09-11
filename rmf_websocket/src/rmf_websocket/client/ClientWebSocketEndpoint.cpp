@@ -41,7 +41,7 @@ void ConnectionMetadata::on_fail(WsClient* c, websocketpp::connection_hdl hdl)
   WsClient::connection_ptr con = c->get_con_from_hdl(hdl);
   _server = con->get_response_header("Server");
   _error_reason = con->get_ec().message();
-  c->get_io_service().post(_reconnection_cb);
+  boost::asio::post(c->get_io_service(), _reconnection_cb);
 }
 
 //=============================================================================
@@ -54,7 +54,7 @@ void ConnectionMetadata::on_close(WsClient* c, websocketpp::connection_hdl hdl)
     << websocketpp::close::status::get_string(con->get_remote_close_code())
     << "), close reason: " << con->get_remote_close_reason();
   _error_reason = s.str();
-  c->get_io_service().post(_reconnection_cb);
+  boost::asio::post(c->get_io_service(), _reconnection_cb);
 }
 
 //=============================================================================
@@ -108,7 +108,7 @@ websocketpp::connection_hdl ConnectionMetadata::get_hdl() const
 //=============================================================================
 ClientWebSocketEndpoint::ClientWebSocketEndpoint(
   std::string const& uri, std::shared_ptr<rclcpp::Node> node,
-  asio::io_service* io_service,
+  asio::io_context* io_service,
   ConnectionCallback cb)
 : _uri(uri), _node(node), _init{false}, _reconnect_enqueued(false),
   _connection_cb(std::move(cb))
