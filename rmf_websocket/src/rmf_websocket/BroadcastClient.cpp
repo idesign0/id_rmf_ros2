@@ -53,7 +53,7 @@ public:
           _io_service.run();
         });
 
-    _io_service.dispatch([this]()
+    boost::asio::dispatch(_io_service, [this]()
       {
         _endpoint.connect();
       });
@@ -113,7 +113,7 @@ public:
     RCLCPP_INFO(
       this->_node->get_logger(),
       "Attempting queue flush if connected");
-    _io_service.dispatch([this]()
+    boost::asio::dispatch(_io_service, [this]()
       {
         _flush_queue_if_connected();
       });
@@ -134,7 +134,7 @@ public:
   {
     /// _queue is thread safe. No need to lock.
     _queue.push(msg);
-    _io_service.dispatch([this]()
+    boost::asio::dispatch(_io_service, [this]()
       {
         _flush_queue_if_connected();
       });
@@ -151,7 +151,7 @@ public:
         log("Buffer full dropping oldest message");
       }
     }
-    _io_service.dispatch([this]()
+    boost::asio::dispatch(_io_service, [this]()
       {
         _flush_queue_if_connected();
       });
@@ -217,7 +217,7 @@ private:
   }
   // create pimpl
   std::string _uri;
-  boost::asio::io_service _io_service;
+  boost::asio::io_context _io_service;
   std::shared_ptr<rclcpp::Node> _node;
   RingBuffer<nlohmann::json> _queue;
   ProvideJsonUpdates _get_json_updates_cb;

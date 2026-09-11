@@ -128,7 +128,7 @@ public:
           _logger_interface->get_logger(), "Stopping BroadcastServer");
       }
 
-      _data->echo_server.get_io_service().post(
+      boost::asio::post(_data->echo_server.get_io_service(), 
           [data = _data]()
           {
             data->echo_server.stop_listening();
