@@ -74,7 +74,7 @@ if(BUILD_TESTING)
 
   target_link_libraries(test_rmf_traffic_ros2
       rmf_traffic_ros2
-      yaml-cpp
+      yaml-cpp::yaml-cpp
   )
 
   add_executable(missing_query_schedule_node
@@ -186,7 +186,7 @@ target_link_libraries(rmf_traffic_ros2
     ${rmf_building_map_msgs_LIBRARIES}
     ${rmf_reservation_msgs_LIBRARIES}
     ${rclcpp_LIBRARIES}
-    yaml-cpp
+    yaml-cpp::yaml-cpp
     ZLIB::ZLIB
     PkgConfig::PROJ
   PRIVATE
