@@ -1039,8 +1039,16 @@ std::shared_ptr<Connections> make_fleet(
       request_msg->fleet_name.empty())
         return;
 
-      connections->fleet->open_lanes(request_msg->open_lanes);
-      connections->fleet->close_lanes(request_msg->close_lanes);
+      // open_lanes()/close_lanes() take std::vector<std::size_t>, but the message field is
+      // std::vector<uint64_t>. On LP64 Linux size_t and uint64_t are the same type so this
+      // binds directly; on macOS size_t is 'unsigned long' and uint64_t is 'unsigned long
+      // long' (distinct) -> "no viable conversion". Rebuild the vector as size_t.
+      connections->fleet->open_lanes(
+        std::vector<std::size_t>(
+          request_msg->open_lanes.begin(), request_msg->open_lanes.end()));
+      connections->fleet->close_lanes(
+        std::vector<std::size_t>(
+          request_msg->close_lanes.begin(), request_msg->close_lanes.end()));
 
       std::unordered_set<std::size_t> newly_closed_lanes;
       for (const auto& l : request_msg->close_lanes)
