@@ -1101,7 +1101,12 @@ std::shared_ptr<Connections> make_fleet(
         requests.push_back(std::move(request));
       }
       connections->fleet->limit_lane_speeds(requests);
-      connections->fleet->remove_speed_limits(request_msg->remove_limits);
+      // remove_speed_limits() takes std::vector<std::size_t>; remove_limits is
+      // std::vector<uint64_t>. Same distinct-type issue as open_lanes/close_lanes on macOS
+      // (size_t=unsigned long vs uint64_t=unsigned long long). Rebuild as size_t.
+      connections->fleet->remove_speed_limits(
+        std::vector<std::size_t>(
+          request_msg->remove_limits.begin(), request_msg->remove_limits.end()));
     });
 
   connections->interrupt_request_sub =
